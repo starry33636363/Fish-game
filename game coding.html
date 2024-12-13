@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fishing Game</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      text-align: center;
+      background: linear-gradient(to bottom, #87CEEB, #4682B4);
+      color: #fff;
+      margin: 0;
+      padding: 0;
+    }
+
+    h1 {
+      margin: 20px 0;
+      font-size: 3rem;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6);
+    }
+
+    #lake {
+      width: 400px;
+      height: 250px;
+      margin: 20px auto;
+      background: radial-gradient(circle at center, #1E90FF, #00008B);
+      border-radius: 20px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.5);
+    }
+
+    #fish {
+      width: 60px;
+      height: 60px;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      display: none;
+      transition: all 0.5s ease-in-out;
+      border-radius: 50%;
+    }
+
+    button {
+      padding: 15px 30px;
+      font-size: 1.5rem;
+      margin-top: 20px;
+      background: #FFD700;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      color: #333;
+      font-weight: bold;
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+      transition: background 0.3s, transform 0.2s;
+    }
+
+    button:hover {
+      background: #FFC107;
+      transform: scale(1.1);
+    }
+
+    #log {
+      margin: 20px auto;
+      width: 90%;
+      max-width: 500px;
+      background: rgba(255, 255, 255, 0.8);
+      padding: 10px;
+      border-radius: 10px;
+      box-shadow: 0 0 12px rgba(0, 0, 0, 0.3);
+      overflow-y: auto;
+      height: 200px;
+      font-size: 1rem;
+      color: #000;
+    }
+
+    .log-entry {
+      margin: 5px 0;
+    }
+
+    #stats {
+      margin-top: 20px;
+      font-size: 1.2rem;
+      color: #fff;
+      text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.6);
+    }
+
+    .stat-item {
+      margin: 10px 0;
+    }
+
+    /* Add ripple effect for button clicks */
+    button:active {
+      box-shadow: 0 3px 6px rgba(0, 0, 0, 0.3);
+      transform: translateY(2px);
+    }
+  </style>
+</head>
+<body>
+  <h1>Fishing Game</h1>
+  <div id="lake">
+    <img id="fish" src="" alt="Fish">
+  </div>
+  <button onclick="goFishing()">Cast Your Line!</button>
+  <div id="stats">
+    <p class="stat-item" id="total-catches">Total Catches: 0</p>
+    <p class="stat-item" id="rare-catches">Rare Fish Caught: 0</p>
+  </div>
+  <div id="log">
+    <p class="log-entry">Welcome to the fishing game! Cast your line to see what you catch!</p>
+  </div>
+
+  <script>
+    const fishTypes = [
+      { name: "Goldfish", rarity: "common", img: "https://via.placeholder.com/60/FFD700" },
+      { name: "Bass", rarity: "common", img: "https://via.placeholder.com/60/00FF00" },
+      { name: "Catfish", rarity: "uncommon", img: "https://via.placeholder.com/60/FFA500" },
+      { name: "Salmon", rarity: "uncommon", img: "https://via.placeholder.com/60/FF6347" },
+      { name: "Shark", rarity: "rare", img: "https://via.placeholder.com/60/0000FF" },
+      { name: "Whale", rarity: "legendary", img: "https://via.placeholder.com/60/800080" },
+      { name: "Tuna", rarity: "common", img: "https://via.placeholder.com/60/4682B4" },
+      { name: "Marlin", rarity: "rare", img: "https://via.placeholder.com/60/1E90FF" },
+      { name: "Swordfish", rarity: "rare", img: "https://via.placeholder.com/60/4B0082" },
+      { name: "Clownfish", rarity: "uncommon", img: "https://via.placeholder.com/60/FFA07A" },
+      { name: "Seahorse", rarity: "uncommon", img: "https://via.placeholder.com/60/20B2AA" },
+      { name: "Jellyfish", rarity: "common", img: "https://via.placeholder.com/60/7FFFD4" },
+      { name: "Blobfish", rarity: "meme", img: "https://via.placeholder.com/60/FFC0CB" }
+    ];
+
+    let totalCatches = 0;
+    let rareCatches = 0;
+
+    function getRandomFish() {
+      const chances = {
+        common: 60,
+        uncommon: 30,
+        rare: 9,
+        legendary: 1,
+        meme: 5
+      };
+
+      const pool = [];
+      fishTypes.forEach(fish => {
+        for (let i = 0; i < chances[fish.rarity]; i++) {
+          pool.push(fish);
+        }
+      });
+
+      const baseFish = pool[Math.floor(Math.random() * pool.length)];
+
+      // Add variation to the fish name and appearance
+      const variations = ["Golden", "Albino", "Spotted", "Striped", "Giant", "Tiny"];
+      const randomVariation = variations[Math.floor(Math.random() * variations.length)];
+      const variedFish = { ...baseFish, name: `${randomVariation} ${baseFish.name}` };
+
+      return variedFish;
+    }
+
+    function updateStats(fish) {
+      totalCatches++;
+      document.getElementById("total-catches").textContent = `Total Catches: ${totalCatches}`;
+
+      if (fish.rarity === "rare" || fish.rarity === "legendary") {
+        rareCatches++;
+        document.getElementById("rare-catches").textContent = `Rare Fish Caught: ${rareCatches}`;
+      }
+    }
+
+    function goFishing() {
+      const fish = getRandomFish();
+      const fishElement = document.getElementById("fish");
+
+      // Show fish image with animation
+      fishElement.src = fish.img;
+      fishElement.style.display = "block";
+      fishElement.style.top = `${Math.random() * 80 + 10}%`;
+      fishElement.style.left = `${Math.random() * 80 + 10}%`;
+
+      // Log the catch
+      const log = document.getElementById("log");
+      const entry = document.createElement("p");
+      entry.className = "log-entry";
+      entry.textContent = `You caught a ${fish.name} (${fish.rarity})!`;
+      log.prepend(entry);
+
+      // Update stats
+      updateStats(fish);
+    }
+  </script>
+</body>
+</html>
